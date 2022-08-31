@@ -6,7 +6,6 @@ import {
   FlatList,
   TouchableOpacity,
   ScrollView,
- 
 } from 'react-native';
 import {useFetchTemplatesQuery} from '@Services/api';
 import {Category, TemplateCard} from '@Components';
@@ -15,22 +14,26 @@ import styles from './styles';
 const HomeScreen = ({navigation}) => {
   const {data, isSuccess, isLoading, isFetching, error} =
     useFetchTemplatesQuery();
-  const [category, setCategory] = useState(data[0]?.category);
-  const [templates, setTemplates] = useState(data[0]?.products);
+  const [category, setCategory] = useState(null);
+  const [templates, setTemplates] = useState(null);
   const [template, setTemplate] = useState(null);
 
+  useEffect(() => {
+    if (data) {
+      setCategory(data[0]?.category);
+      setTemplates(data[0]?.products);
+    }
+  }, [data]);
   const renderTemplate = ({item}) => {
     return (
       <TemplateCard
         item={item}
         template={template}
-        style={
-            {
-              backgroundColor:
-                template?.id === item.id ? '#EBFFFE' : 'transparent',
-              borderWidth: template?.id === item.id ? 1 : 0,
-              borderColor: template?.id === item.id ? '#60D3CF' : 'transparent',
-            }}
+        style={{
+          backgroundColor: template?.id === item.id ? '#EBFFFE' : 'transparent',
+          borderWidth: template?.id === item.id ? 1 : 0,
+          borderColor: template?.id === item.id ? '#60D3CF' : 'transparent',
+        }}
         onPress={() => {
           setTemplate(item);
         }}
@@ -55,7 +58,7 @@ const HomeScreen = ({navigation}) => {
       <ScrollView style={{flex: 1}}>
         <View>
           {(isLoading || isFetching) && <ActivityIndicator />}
-          {!isSuccess ? <Text>{'error'}</Text> : <Text></Text>}
+          {!isSuccess ? <Text></Text> : <Text></Text>}
         </View>
 
         <FlatList
@@ -89,7 +92,7 @@ const HomeScreen = ({navigation}) => {
         }}
         disabled={!template}
         style={[
-    styles.selectedBttn,
+          styles.selectedBttn,
           {backgroundColor: !template ? 'grey' : '#13C3BD'},
         ]}>
         <Text style={{color: '#fff', fontSize: 20}}>
@@ -101,4 +104,3 @@ const HomeScreen = ({navigation}) => {
 };
 
 export default HomeScreen;
-
